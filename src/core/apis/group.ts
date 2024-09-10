@@ -12,6 +12,8 @@ import {
 import { isNumeric, solveAsyncProblem } from '@/common/helper';
 import { LimitedHashTable } from '@/common/message-unique';
 import { NTEventWrapper } from '@/common/event';
+import { QWebReq } from './proto';
+import { c } from 'vite/dist/node/types.d-aGj9QkWt';
 
 export class NTQQGroupApi {
     context: InstanceContext;
@@ -32,10 +34,19 @@ export class NTQQGroupApi {
         for (const group of this.groups) {
             this.groupCache.set(group.groupCode, group);
         }
-        // let text = await this.context.session.getMsgService().sendSsoCmdReqByContend(
-        //     'LightAppSvc.mini_app_share.AdaptShareInfo',
-        //     JSON.stringify({ data: 'test' }));
-        // console.log(text);
+        let req = Buffer.from('120a313130393933373535371a0ce59394e593a9e59394e593a92221e68891e58f91e78eb0e4ba86e6b3b0e68b89e9a5ade79a84e695b0e580bce680aa28c1abf6b6063003380140004a457075626d696e6973686172652d33303136312e706963737a2e717069632e636e2f35656265356130612d326631372d343066642d386639392d6632353835316563626633325a4870616765732f766964656f2f766964656f3f627669643d4256316d74705465374571702673686172655f736f757263653d71715f75676326756e697175655f6b3d656e5254383634680370008001008a017768747470733a2f2f6232332e74762f656e52543836343f73686172655f6d656469756d3d616e64726f69642673686172655f736f757263653d717126626269643d585542323541464235343346373445303332343741424133343033353131333030413734372674733d31373235373937383139363934920109313030393531373736',
+            'hex');
+        let data = QWebReq.encode({
+            ShareInfoReq: req
+        }).finish();
+        console.log('xxxxxxxxxx', Buffer.from(data).toString('hex'));
+        let text = await this.context.session.getMsgService().sendSsoCmdReqByContend(
+            'LightAppSvc.mini_app_share.AdaptShareInfo',
+            Buffer.from(data).toString()
+        );
+        console.log(text);
+        //data输出hex
+
         this.context.logger.logDebug(`加载${this.groups.length}个群组缓存完成`);
     }
 
